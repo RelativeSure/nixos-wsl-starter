@@ -17,6 +17,8 @@
     "d /home/${username}/.config/lvim 0755 ${username} users"
   ];
 
+  programs.nix-ld.enable = true;
+
   # FIXME: change your shell here if you don't want zsh
   #programs.zsh.enable = false;
   #environment.pathsToLink = ["/share/zsh"];
@@ -52,6 +54,7 @@
 
   environment.systemPackages = [
     (import ./win32yank.nix {inherit pkgs;})
+    pkgs.openvscode-server
   ];
 
   home-manager.users.${username} = {

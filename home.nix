@@ -86,6 +86,9 @@
     sqlfluff
     tflint
     yamllint
+
+    # misc
+    deterministic-uname
   ];
 in {
   imports = [
