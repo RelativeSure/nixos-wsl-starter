@@ -124,7 +124,22 @@ in {
     ];
 
   # FIXME: if you want to version your LunarVim config, add it to the root of this repo and uncomment the next line
-  # home.file.".config/lvim/config.lua".source = ./lvim_config.lua;
+  # https://github.com/bonsairobo/MyNixOs/blob/f3fff2969131350966c8c2def7283829c98ddbdd/configuration.nix#L234-L243
+  home.file.".config/lvim/config.lua".source = ./lvim_config.lua;
+  home.file.".config/lvim/lua/user/markdown_syn.lua".source = ./markdown_syn.lua;
+  home.file.".config/lvim/lua/user/noice.lua".source = ./noice.lua;
+  home.file.".config/lvim/lua/user/presence.lua".source = ./presence.lua;
+  home.file.".config/lvim/lua/user/sidebar.lua".source = ./sidebar.lua;
+
+  home.file.".gitignore".source = ./gitignore;
+
+  #home.file = {
+  #  lunarvim_conf = { source = ./config.lua; target = ".config/lvim/config.lua"; };
+  #  lunarvim_markdown_syn = { source = ./markdown_syn.lua; target = ".config/lua/user/markdown_syn.lua"; };
+  #  lunarvim_noice = { source = ./noice.lua; target = ".config/lua/user/noice.lua"; };
+  #  lunarvim_presence = { source = ./presence.lua; target = ".config/lua/user/presence.lua"; };
+  #  lunarvim_sidebar = { source = ./sidebar.lua; target = ".config/lua/user/sidebar.lua"; };
+  #};
 
   programs = {
     home-manager.enable = true;
@@ -133,6 +148,7 @@ in {
 
     # FIXME: disable this if you don't want to use the starship prompt
     starship.enable = true;
+    starship.enableTransience = true;
     starship.settings = {
       aws.disabled = true;
       gcloud.disabled = true;
@@ -177,12 +193,29 @@ in {
         #     insteadOf = "https://gitlab.com";
         #   };
         # };
+        core = {
+          editor = "lvim";
+          excludesFile = "~/.gitignore";
+        };
+        fetch = {
+          prune = true;
+        };
+        alias = {
+          empty = "git commit --allow-empty";
+          delete-local-merged = "!git fetch && git branch --merged | egrep -v 'master' | xargs git branch -d";
+        };
+        init = {
+          defaultBranch = "master";
+        };
+        color = {
+          ui = true;
+        };
         push = {
           default = "current";
           autoSetupRemote = true;
         };
         merge = {
-          conflictstyle = "diff3";
+          conflictstyle = "diff";
         };
         diff = {
           colorMoved = "default";
@@ -194,7 +227,14 @@ in {
       enable = true;
       interactiveShellInit = ''
         set fish_greeting # Disable greeting
+        set -gx GPG_TTY (tty)
         fish_add_path $HOME/.local/bin
+        function starship_transient_prompt_func
+          starship module character
+        end
+        function starship_transient_rprompt_func
+          starship module time
+        end
       '';
       #plugins = [
       #  { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
